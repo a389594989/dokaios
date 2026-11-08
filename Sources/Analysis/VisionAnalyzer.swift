@@ -45,6 +45,9 @@ final class VisionAnalyzer {
         }
     }
 
+    /// 同步分析 (测试用)。
+    func analyzeSync(_ pb: CVPixelBuffer, anchor: CGPoint? = nil) -> SceneAnalysis { run(pb, anchor: anchor) }
+
     private func run(_ pb: CVPixelBuffer, anchor: CGPoint?) -> SceneAnalysis {
         var out = SceneAnalysis()
         out.stats = Self.stats(pb)

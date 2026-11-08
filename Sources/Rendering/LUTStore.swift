@@ -9,7 +9,7 @@ struct FilmLUT {
     /// CIColorCube 用: 64^3 RGBA Float32, R 变化最快, 其次 G, 最后 B。
     let cubeData: Data
     /// Metal 预览用 3D 纹理 (rgba8Unorm)。
-    let texture: MTLTexture
+    let texture: MTLTexture?
 }
 
 /// 把 Doka 的 512x512 LUT 图 (8x8 个 64x64 图块, 图块序号=B, 块内 x=R, y=G) 转成 3D LUT。
@@ -17,10 +17,10 @@ final class LUTStore {
     static let size = 64
     static let tiles = 8
 
-    private let device: MTLDevice
+    private let device: MTLDevice?
     private var cache: [String: FilmLUT] = [:]
 
-    init(device: MTLDevice) { self.device = device }
+    init(device: MTLDevice?) { self.device = device }
 
     /// Bundle 内所有可用 LUT 的 id (如 "f_provia")。
     static func availableIDs() -> [String] {
@@ -71,14 +71,17 @@ final class LUTStore {
             }
         }
 
-        let desc = MTLTextureDescriptor()
-        desc.textureType = .type3D
-        desc.pixelFormat = .rgba8Unorm
-        desc.width = n; desc.height = n; desc.depth = n
-        desc.usage = .shaderRead
-        guard let tex = device.makeTexture(descriptor: desc) else { return nil }
-        tex.replace(region: MTLRegionMake3D(0, 0, 0, n, n, n), mipmapLevel: 0, slice: 0,
-                    withBytes: bytes, bytesPerRow: n * 4, bytesPerImage: n * n * 4)
+        var tex: MTLTexture?
+        if let device {
+            let desc = MTLTextureDescriptor()
+            desc.textureType = .type3D
+            desc.pixelFormat = .rgba8Unorm
+            desc.width = n; desc.height = n; desc.depth = n
+            desc.usage = .shaderRead
+            tex = device.makeTexture(descriptor: desc)
+            tex?.replace(region: MTLRegionMake3D(0, 0, 0, n, n, n), mipmapLevel: 0, slice: 0,
+                         withBytes: bytes, bytesPerRow: n * 4, bytesPerImage: n * n * 4)
+        }
 
         let data = floats.withUnsafeBufferPointer { Data(buffer: $0) }
         return FilmLUT(id: id, name: Self.displayName(id), cubeData: data, texture: tex)

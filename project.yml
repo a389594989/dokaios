@@ -31,3 +31,25 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.dokaios
         TARGETED_DEVICE_FAMILY: "1"
+  DokaiOSTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+      - path: TestImages
+        type: folder
+    dependencies:
+      - target: DokaiOS
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.dokaios.tests
+schemes:
+  DokaiOS:
+    build:
+      targets:
+        DokaiOS: all
+        DokaiOSTests: [test]
+    test:
+      targets:
+        - DokaiOSTests

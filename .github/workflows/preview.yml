@@ -1,0 +1,26 @@
+name: Film & composition preview (no device needed)
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  preview:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install xcodegen
+      - run: xcodegen generate
+      - name: Run tests on iOS Simulator
+        run: |
+          UDID=$(xcrun simctl list devices available iPhone | grep -m1 -oE '[0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12}')
+          echo "Simulator: $UDID"
+          mkdir -p out
+          set -o pipefail
+          TEST_RUNNER_DOKA_OUT_DIR="$PWD/out" xcodebuild test \
+            -project DokaiOS.xcodeproj -scheme DokaiOS \
+            -destination "id=$UDID" \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee out/test.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: preview-results
+          path: out/
