@@ -24,7 +24,7 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     var params = FilmParams()
     private var lutTexture: MTLTexture?
 
-    init?() {
+    init?(useDefaultDevice: Bool = true) {
         guard let device = MTLCreateSystemDefaultDevice(),
               let queue = device.makeCommandQueue(),
               let library = device.makeDefaultLibrary() else { return nil }

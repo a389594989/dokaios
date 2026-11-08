@@ -119,7 +119,7 @@ final class CameraService: NSObject, ObservableObject {
         raw.sort { $0.display < $1.display }
         return raw.map { item in
             let rounded = (item.display * 10).rounded() / 10
-            let label = abs(rounded - 1) < 0.05 ? "1x" : (rounded == rounded.rounded() ? String(Int(rounded)) : String(rounded))
+            let label = abs(rounded - 1) < 0.05 ? "1x" : (rounded == rounded.rounded() ? String(Int(rounded)) : String(format: "%.1f", Double(rounded)))
             return ZoomStop(label: label, display: rounded, factor: item.factor)
         }
     }

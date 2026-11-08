@@ -1,5 +1,6 @@
 import CoreGraphics
 import CoreVideo
+import QuartzCore
 import Foundation
 import Vision
 
