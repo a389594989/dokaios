@@ -31,6 +31,23 @@ struct ViewfinderView: View {
 
                 VStack {
                     topBar
+                    if let s = model.suggestion, !s.postureTip.isEmpty {
+                        HStack(spacing: 6) {
+                            Text(String(format: "%.1fx", s.recommendedZoom))
+                                .font(.caption.bold())
+                                .padding(.horizontal, 6).padding(.vertical, 2)
+                                .background(s.alignment > 0.85 ? Color.green : Color.yellow, in: Capsule())
+                                .foregroundColor(.black)
+                            Text(s.postureTip)
+                                .font(.caption2)
+                                .lineLimit(1)
+                                .foregroundColor(.white)
+                        }
+                        .padding(.horizontal, 10).padding(.vertical, 5)
+                        .background(Color.black.opacity(0.65), in: Capsule())
+                        .padding(.top, 4)
+                        .transition(.opacity)
+                    }
                     Spacer()
                     filmCarousel
                     zoomBar
